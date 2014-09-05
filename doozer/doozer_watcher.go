@@ -54,8 +54,12 @@ type DoozerWatcherCreator struct {
 	conn *doozer.Conn
 }
 
-func (d *DoozerWatcherCreator) Watch(file *url.URL, cb func(string, io.ReadCloser), errchan chan error) (file.Watcher, error) {
-	var watcher *DoozerWatcher = NewDoozerWatcher(d.conn, file.Path, cb, errchan)
+// Create a new watcher object for watching for notifications on the
+// given URL.
+func (d *DoozerWatcherCreator) Watch(
+	file *url.URL, cb func(string, io.ReadCloser)) (
+	file.Watcher, error) {
+	var watcher *DoozerWatcher = NewDoozerWatcher(d.conn, file.Path, cb)
 	return watcher, nil
 }
 
@@ -78,11 +82,11 @@ func RegisterFileType(conn *doozer.Conn) {
 // invoked for the first time, so it is safe to ignore it and just use this
 // to be notified of file modifications.
 func NewDoozerWatcher(conn *doozer.Conn, path string,
-	cb func(string, io.ReadCloser), errchan chan error) *DoozerWatcher {
+	cb func(string, io.ReadCloser)) *DoozerWatcher {
 	var ret = &DoozerWatcher{
 		doozer_conn: conn,
 		path:        path,
-		errchan:     errchan,
+		errchan:     make(chan error),
 	}
 	go ret.watchForChanges()
 	return ret
@@ -92,13 +96,10 @@ func NewDoozerWatcher(conn *doozer.Conn, path string,
 func (dw *DoozerWatcher) watchForChanges() {
 	var rev int64
 	var err error
-	for {
+
+	for !dw.shutdown {
 		var ev doozer.Event
 		var buf *bytes.Reader
-
-		if dw.shutdown {
-			return
-		}
 
 		ev, err = dw.doozer_conn.Wait(dw.path, rev)
 		if err != nil {
@@ -121,6 +122,13 @@ func (dw *DoozerWatcher) watchForChanges() {
 
 // Shut down the listener after the next change.
 // There's no way to stop it immediately, though.
-func (dw *DoozerWatcher) Shutdown() {
+func (dw *DoozerWatcher) Shutdown() error {
 	dw.shutdown = true
+	return nil
+}
+
+// Retrieve the error channel associated with the watcher.
+// It will stream a list of all errors created while watching.
+func (dw *DoozerWatcher) ErrChan() chan error {
+	return dw.errchan
 }

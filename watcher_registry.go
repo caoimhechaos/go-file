@@ -41,14 +41,20 @@ import (
 // by their URL schema. Watch will be invoked whenever watching a file
 // with the given schema is requested.
 type WatcherCreator interface {
-	Watch(*url.URL, func(string, io.ReadCloser), chan error) (Watcher, error)
+	Watch(*url.URL, func(string, io.ReadCloser)) (Watcher, error)
 }
 
 // Watchers are the objects doing the actual watching of individual
 // files. They are configured by the WatcherCreator and will continue
 // invoking their configured handlers until Shutdown() is called.
 type Watcher interface {
-	Shutdown()
+	// Stop listening for notifications on the given file. This may take
+	// until the next event to take effect.
+	Shutdown() error
+
+	// Retrieve the error channel associated with the watcher.
+	// It will stream a list of all errors created while watching.
+	ErrChan() chan error
 }
 
 // List of URL schema handlers known.
@@ -64,8 +70,7 @@ func RegisterWatcher(schema string, creator WatcherCreator) {
 // "handler". This will look up the required handler for the scheme specified
 // in the URL and forward the watch request. A Watcher object is returned
 // which can be used to stop watching, as defined by the individual watchers.
-func Watch(fileurl *url.URL, handler func(string, io.ReadCloser),
-	errchan chan error) (Watcher, error) {
+func Watch(fileurl *url.URL, handler func(string, io.ReadCloser)) (Watcher, error) {
 	var creator WatcherCreator
 	var ok bool
 
@@ -75,5 +80,5 @@ func Watch(fileurl *url.URL, handler func(string, io.ReadCloser),
 			fileurl.Scheme + "\"")
 	}
 
-	return creator.Watch(fileurl, handler, errchan)
+	return creator.Watch(fileurl, handler)
 }

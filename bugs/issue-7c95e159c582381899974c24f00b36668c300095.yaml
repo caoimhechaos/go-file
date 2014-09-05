@@ -1,0 +1,27 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Create a Doozer file reader
+desc: There should be a way to simply read a Doozer file using an io.Reader interface.
+type: :feature
+component: doozer
+release: "0.1"
+reporter: Caoimhe Chaos <caoimhechaos@protonmail.com>
+status: :closed
+disposition: :fixed
+creation_time: 2014-09-05 22:29:16.437442 Z
+references: []
+
+id: 7c95e159c582381899974c24f00b36668c300095
+log_events: 
+- - 2014-09-05 22:29:17.890608 Z
+  - Caoimhe Chaos <caoimhechaos@protonmail.com>
+  - created
+  - ""
+- - 2014-09-05 22:29:29.938562 Z
+  - Caoimhe Chaos <caoimhechaos@protonmail.com>
+  - closed with disposition fixed
+  - |-
+    commit 109eb47e86978d857f413f56053b17398cf58038
+    Author: Caoimhe Chaos <caoimhechaos@protonmail.com>
+    Date:   Thu Sep 4 02:24:19 2014 +0200
+    
+        Add a simple implementation of a Doozer file reader.

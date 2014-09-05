@@ -1,0 +1,20 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Add unit tests
+desc: |-
+  As a respectable project we should have unit tests, I just can't currently
+  think of a way to implement them.
+type: :feature
+component: go-file
+release: 
+reporter: Caoimhe Chaos <caoimhechaos@protonmail.com>
+status: :unstarted
+disposition: 
+creation_time: 2014-09-05 22:33:09.799494 Z
+references: []
+
+id: 1a3d976937ea418a8691d54f64ef5a90efb7ae9f
+log_events: 
+- - 2014-09-05 22:33:11.188930 Z
+  - Caoimhe Chaos <caoimhechaos@protonmail.com>
+  - created
+  - ""

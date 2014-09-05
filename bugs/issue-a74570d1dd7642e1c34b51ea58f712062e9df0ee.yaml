@@ -1,0 +1,31 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: Create a registry for watching files
+desc: |-
+  There should be a way to watch files without knowing what kind of backend
+  they're connected to.
+type: :feature
+component: registry
+release: "0.1"
+reporter: Caoimhe Chaos <caoimhechaos@protonmail.com>
+status: :closed
+disposition: :fixed
+creation_time: 2014-09-05 22:28:20.690340 Z
+references: []
+
+id: a74570d1dd7642e1c34b51ea58f712062e9df0ee
+log_events: 
+- - 2014-09-05 22:28:22.919363 Z
+  - Caoimhe Chaos <caoimhechaos@protonmail.com>
+  - created
+  - ""
+- - 2014-09-05 22:31:15.416025 Z
+  - Caoimhe Chaos <caoimhechaos@protonmail.com>
+  - closed with disposition fixed
+  - |-
+    commit 28ddbd8d064635277e08032b56d0136df9f917fe
+    Author: Caoimhe Chaos <caoimhechaos@protonmail.com>
+    Date:   Thu Sep 4 23:53:03 2014 +0200
+    
+        Create a registry for file watchers.
+        
+        Add a Doozer implementation to it.

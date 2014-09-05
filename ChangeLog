@@ -1,0 +1,5 @@
+== 0.1 / unreleased
+* Create a Doozer file watcher implementation
+* Create a Doozer file reader
+* Create a registry for watching files
+* Implement a plain file watcher

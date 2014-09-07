@@ -60,13 +60,18 @@ type doozerFileSystem struct {
 	conn *doozer.Conn
 }
 
-// Open the given file given as "u" for reading.
+// Open the file given as "u" for reading.
 func (d *doozerFileSystem) Open(u *url.URL) (io.ReadCloser, error) {
 	return NewDoozerReader(d.conn, u.Path), nil
 }
+
+// Open the file given as "u" for writing. Any data written to "u"
+// will only actually be written to Doozer when Close() is invoked.
 func (d *doozerFileSystem) OpenForWrite(u *url.URL) (io.WriteCloser, error) {
 	return NewDoozerWriter(d.conn, u.Path), nil
 }
+
+// Get a list of all names under "u", which is supposed to be a directory.
 func (d *doozerFileSystem) List(u *url.URL) ([]string, error) {
 	return []string{}, file.FS_OperationNotImplementedError
 }

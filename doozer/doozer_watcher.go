@@ -63,15 +63,6 @@ func (d *DoozerWatcherCreator) Watch(
 	return watcher, nil
 }
 
-// Register the Doozer watcher with the go-file mechanisms.
-func RegisterFileType(conn *doozer.Conn) {
-	var watcher_creator = &DoozerWatcherCreator{
-		conn: conn,
-	}
-	file.RegisterWatcher("doozer", watcher_creator)
-	file.RegisterWatcher("dz", watcher_creator)
-}
-
 // Create a new Doozer watcher on the connection "conn". Listen for changes
 // of the file / subtree "path", and deliver notifications to "callback".
 // Any errors will be returned on the given error channel "errchan.

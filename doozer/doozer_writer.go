@@ -29,51 +29,62 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Doozer implementation as a file system layer for go-file.
 package doozer
 
 import (
-	"io"
-	"net/url"
+	"bytes"
+	"os"
 
-	"github.com/caoimhechaos/go-file"
 	"github.com/ha/doozer"
 )
 
-// Register the Doozer watcher with the go-file mechanisms.
-func RegisterFileType(conn *doozer.Conn) {
-	var watcher_creator = &DoozerWatcherCreator{
-		conn: conn,
-	}
-	var fs = &doozerFileSystem{
-		conn: conn,
-	}
-	file.RegisterWatcher("doozer", watcher_creator)
-	file.RegisterWatcher("dz", watcher_creator)
-	file.RegisterFileSystem("doozer", fs)
-	file.RegisterFileSystem("dz", fs)
-}
+const (
+	MAX_FILE_LEN = (1 << 10)
+)
 
-// Object providing all relevant operations for working with Doozer as a
-// file system.
-type doozerFileSystem struct {
+// Doozer writer object. Unlike most other writers, all file contents are
+// only written when the writer is closed.
+type DoozerWriter struct {
 	conn *doozer.Conn
+	path string
+	buf  *bytes.Buffer
 }
 
-// Open the given file given as "u" for reading.
-func (d *doozerFileSystem) Open(u *url.URL) (io.ReadCloser, error) {
-	return NewDoozerReader(d.conn, u.Path), nil
-}
-func (d *doozerFileSystem) OpenForWrite(u *url.URL) (io.WriteCloser, error) {
-	return NewDoozerWriter(d.conn, u.Path), nil
-}
-func (d *doozerFileSystem) List(u *url.URL) ([]string, error) {
-	return []string{}, file.FS_OperationNotImplementedError
+// Create a new Doozer writer for the file given at "path", on the connection
+// "conn". Any contents in this writer will be written on Close().
+func NewDoozerWriter(conn *doozer.Conn, path string) *DoozerWriter {
+	return &DoozerWriter{
+		conn: conn,
+		path: path,
+		buf:  new(bytes.Buffer),
+	}
 }
 
-// Create a new watcher object for watching for notifications on the
-// given URL.
-func (d *doozerFileSystem) Watch(u *url.URL,
-	cb func(string, io.ReadCloser)) (file.Watcher, error) {
-	return NewDoozerWatcher(d.conn, u.Path, cb), nil
+// Write the bytes given in "b" to the file on Doozer. If the total size
+// of the file exceeds 1MB, an "invalid" error (os.ErrInvalid) will be
+// returned.
+func (d *DoozerWriter) Write(b []byte) (n int, err error) {
+	n, err = d.buf.Write(b)
+	if err == nil && d.buf.Len() > MAX_FILE_LEN {
+		return n, os.ErrInvalid
+	}
+
+	return
+}
+
+// Write the contents collected so far to the file in Doozer.
+func (d *DoozerWriter) Close() error {
+	var rev int64
+	var err error
+
+	_, rev, err = d.conn.Stat(d.path, nil)
+	if err != nil {
+		rev, err = d.conn.Rev()
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = d.conn.Set(d.path, rev, d.buf.Bytes())
+	return err
 }

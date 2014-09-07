@@ -72,8 +72,16 @@ func (d *doozerFileSystem) OpenForWrite(u *url.URL) (io.WriteCloser, error) {
 }
 
 // Get a list of all names under "u", which is supposed to be a directory.
-func (d *doozerFileSystem) List(u *url.URL) ([]string, error) {
-	return []string{}, file.FS_OperationNotImplementedError
+func (d *doozerFileSystem) List(u *url.URL) (ret []string, err error) {
+	var rev int64
+
+	rev, err = d.conn.Rev()
+	if err != nil {
+		return
+	}
+
+	ret, err = d.conn.Getdir(u.Path, rev, 0, -1)
+	return
 }
 
 // Create a new watcher object for watching for notifications on the

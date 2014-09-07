@@ -34,33 +34,48 @@ package file
 import (
 	"io"
 	"net/url"
+	"os"
+
+	"github.com/caoimhechaos/go-file"
 )
 
-// Objects describing how to watch a specific type of files, identified
-// by their URL schema. Watch will be invoked whenever watching a file
-// with the given schema is requested.
-type WatcherCreator interface {
-	Watch(*url.URL, func(string, io.ReadCloser)) (Watcher, error)
+// Automatically sign us up for file:// URLs.
+func init() {
+	file.RegisterFileSystem("file", &FileFileSystemIntegration{})
 }
 
-// Watchers are the objects doing the actual watching of individual
-// files. They are configured by the WatcherCreator and will continue
-// invoking their configured handlers until Shutdown() is called.
-type Watcher interface {
-	// Stop listening for notifications on the given file. This may take
-	// until the next event to take effect.
-	Shutdown() error
-
-	// Retrieve the error channel associated with the watcher.
-	// It will stream a list of all errors created while watching.
-	ErrChan() chan error
+// Go File system integration for the local file system.
+type FileFileSystemIntegration struct {
 }
 
-// List of URL schema handlers known.
-var fileWatcherHandlers map[string]WatcherCreator = make(map[string]WatcherCreator)
+// Open the file pointed to by "u" for reading.
+func (f *FileFileSystemIntegration) Open(u *url.URL) (io.ReadCloser, error) {
+	return os.Open(u.Path)
+}
 
-// Register "creator" as a handler for watchers for all URLs with the given
-// "schema".
-func RegisterWatcher(schema string, creator WatcherCreator) {
-	fileWatcherHandlers[schema] = creator
+// Open the file pointed to by "u" for writing.
+func (f *FileFileSystemIntegration) OpenForWrite(u *url.URL) (
+	io.WriteCloser, error) {
+	return os.OpenFile(u.Path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+}
+
+// Return a list of all files in the directory given in "u".
+func (f *FileFileSystemIntegration) List(u *url.URL) ([]string, error) {
+	var dir *os.File
+	var err error
+
+	dir, err = os.Open(u.Path)
+	if err != nil {
+		return []string{}, err
+	}
+
+	return dir.Readdirnames(-1)
+}
+
+// Create a new watcher object for watching for notifications on the
+// given URL.
+func (f *FileFileSystemIntegration) Watch(
+	fileid *url.URL, cb func(string, io.ReadCloser)) (
+	file.Watcher, error) {
+	return NewFileWatcher(fileid.Path, cb)
 }

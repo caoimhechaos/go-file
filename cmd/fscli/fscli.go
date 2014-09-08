@@ -134,6 +134,36 @@ func main() {
 					err.Error())
 			}
 		}
+	case "write":
+		var wc io.WriteCloser
+		if len(args) != 1 {
+			fmt.Print("Wrong number of arguments to write (expected " +
+				"file name)")
+			os.Exit(1)
+		}
+		u, err = url.Parse(args[0])
+		if err != nil {
+			fmt.Printf("%s: Error parsing: %s\n", args[0], err.Error())
+			os.Exit(1)
+		}
+
+		wc, err = file.OpenForWrite(u)
+		if err != nil {
+			fmt.Printf("%s: error opening: %s\n", u.String(),
+				err.Error())
+			os.Exit(1)
+		}
+
+		_, err = io.Copy(wc, os.Stdin)
+		if err != nil {
+			fmt.Printf("%s: error copying: %s\n", u.String(),
+				err.Error())
+		}
+
+		err = wc.Close()
+		if err != nil {
+			fmt.Printf("%s: error closing: %s\n", u.String(), err.Error())
+		}
 	default:
 		fmt.Printf("Command not implemented: %s\n", cmd)
 		os.Exit(1)

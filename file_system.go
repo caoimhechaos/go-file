@@ -82,3 +82,46 @@ func Watch(fileurl *url.URL, handler func(string, io.ReadCloser)) (Watcher, erro
 
 	return nil, FS_OperationNotImplementedError
 }
+
+// Read all names under the given path as file names. Requires "u" to point
+// to a directory. The list of file names returned should only be short,
+// local names which can be appended to the URL to form a new one.
+func List(u *url.URL) ([]string, error) {
+	var fs FileSystem
+	var ok bool
+
+	fs, ok = fileSystemHandlers[u.Scheme]
+	if ok {
+		return fs.List(u)
+	}
+
+	return nil, FS_OperationNotImplementedError
+}
+
+// Return a reader for the file given as "u".
+func Open(u *url.URL) (io.ReadCloser, error) {
+	var fs FileSystem
+	var ok bool
+
+	fs, ok = fileSystemHandlers[u.Scheme]
+	if ok {
+		return fs.Open(u)
+	}
+
+	return nil, FS_OperationNotImplementedError
+}
+
+// Return a writer for the file given as "u". Any writer should
+// guarantee that all data has been written by the time Close()
+// returns without an error. No other guarantees have to be given.
+func OpenForWrite(u *url.URL) (io.WriteCloser, error) {
+	var fs FileSystem
+	var ok bool
+
+	fs, ok = fileSystemHandlers[u.Scheme]
+	if ok {
+		return fs.OpenForWrite(u)
+	}
+
+	return nil, FS_OperationNotImplementedError
+}

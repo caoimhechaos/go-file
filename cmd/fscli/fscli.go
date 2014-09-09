@@ -45,8 +45,9 @@ import (
 	"github.com/ha/doozer"
 )
 
-func echoFileOnChange(path string, unuse io.ReadCloser) {
-	fmt.Print(path, " modified.")
+func echoFileOnChange(path string, rc io.ReadCloser) {
+	fmt.Println(path, " modified.")
+	rc.Close()
 }
 
 func echoErrors(errchan chan error) {

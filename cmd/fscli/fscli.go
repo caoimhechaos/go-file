@@ -45,6 +45,18 @@ import (
 	"github.com/ha/doozer"
 )
 
+func echoFileOnChange(path string, unuse io.ReadCloser) {
+	fmt.Print(path, " modified.")
+}
+
+func echoErrors(errchan chan error) {
+	var err error
+
+	for err = range errchan {
+		fmt.Printf("Error watching: %s\n", err.Error())
+	}
+}
+
 func main() {
 	var doozer_uri, doozer_buri string
 	var args []string
@@ -163,6 +175,41 @@ func main() {
 		err = wc.Close()
 		if err != nil {
 			fmt.Printf("%s: error closing: %s\n", u.String(), err.Error())
+		}
+	case "watch":
+		var devnull *os.File
+		var watchers []file.Watcher = make([]file.Watcher, len(args))
+		var watcher file.Watcher
+
+		for i, path := range args {
+
+			u, err = url.Parse(path)
+			if err != nil {
+				fmt.Printf("%s: Error parsing: %s\n", path, err.Error())
+				continue
+			}
+
+			watcher, err = file.Watch(u, echoFileOnChange)
+			if err != nil {
+				fmt.Printf("%s: error watching: %s\n", u.String(),
+					err.Error())
+				continue
+			}
+
+			go echoErrors(watcher.ErrChan())
+			watchers[i] = watcher
+		}
+
+		// Wait for the user to press Ctrl-D.
+		devnull, err = os.Open(os.DevNull)
+		if err != nil {
+			fmt.Printf("Error opening %s: %s", os.DevNull, err.Error())
+		}
+		io.Copy(devnull, os.Stdin)
+		devnull.Close()
+
+		for _, watcher = range watchers {
+			watcher.Shutdown()
 		}
 	default:
 		fmt.Printf("Command not implemented: %s\n", cmd)

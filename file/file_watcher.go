@@ -60,6 +60,24 @@ type FileWatcher struct {
 	shutdown bool
 }
 
+// Resolve an absolute and a relative path to a new absolute path.
+func resolveRelative(orig, relative string) (path string, err error) {
+	var origurl, newurl *url.URL
+
+	origurl, err = url.Parse(orig)
+	if err != nil {
+		return
+	}
+
+	newurl, err = origurl.Parse(relative)
+	if err != nil {
+		return
+	}
+
+	path = newurl.String()
+	return
+}
+
 // Automatically sign us up for file:// URLs.
 func init() {
 	file.RegisterWatcher("file", &FileWatcherCreator{})
@@ -68,6 +86,7 @@ func init() {
 // Create a new FileWatcher watching the file at "path".
 func NewFileWatcher(path string, cb func(string, io.ReadCloser)) (
 	*FileWatcher, error) {
+	var fi os.FileInfo
 	var ret *FileWatcher
 	var watcher *fsnotify.Watcher
 	var err error
@@ -86,6 +105,66 @@ func NewFileWatcher(path string, cb func(string, io.ReadCloser)) (
 		cb:      cb,
 		watcher: watcher,
 		path:    path,
+	}
+
+	// Treat the current state of the file as the first change.
+	fi, err = os.Stat(path)
+	if err != nil {
+		return nil, err
+	}
+
+	if fi.Mode()&os.ModeSymlink == os.ModeSymlink {
+		var subpath string
+
+		subpath, err = os.Readlink(path)
+		if err != nil {
+			return nil, err
+		}
+
+		path, err = resolveRelative(path, subpath)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if fi.IsDir() {
+		var names []string
+		var name string
+		var f *os.File
+
+		f, err = os.Open(path)
+		if err != nil {
+			return nil, err
+		}
+
+		names, err = f.Readdirnames(-1)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, name = range names {
+			var combined string
+			var reader *os.File
+
+			combined, err = resolveRelative(path+"/", name)
+			if err != nil {
+				return nil, err
+			}
+
+			reader, err = os.Open(combined)
+			cb(combined, reader)
+		}
+
+		f.Close()
+	} else {
+		var reader *os.File
+
+		reader, err = os.Open(path)
+		if err != nil {
+			return nil, err
+		}
+
+		cb(path, reader)
 	}
 
 	go ret.watchForChanges()

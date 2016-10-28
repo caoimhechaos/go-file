@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<todo version="0.1.20">
+    <note priority="veryhigh" time="1477612654" done="1477613465">
+        Add a common writer API
+
+	There should be a common API to point to a file URL and write it.
+        <comment>
+            commit ef372399f1ea65708b1f3989ba7a7de6dc42737d
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Mon Sep 8 00:43:59 2014 +0200
+
+	    Add a new registry for file systems and add the regular file
+	    implementation as one.
+        </comment>
+    </note>
+    <note priority="veryhigh" time="1477613074" done="1477613088">
+        Create a registry for watching files
+
+	There should be a way to watch files without knowing what kind of
+	backend they're connected to.
+        <comment>
+            commit 28ddbd8d064635277e08032b56d0136df9f917fe
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Thu Sep 4 23:53:03 2014 +0200
+
+	    Create a registry for file watchers.
+
+	    Add a Doozer implementation to it.
+        </comment>
+    </note>
+    <note priority="high" time="1477613364" done="1477613376">
+        Implement a plain file watcher
+
+	Implement an object for watching plain files for changes.
+        <comment>
+            commit 7e22e23085e4e2ba6a37b21395ce06978a5cdfb6
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Fri Sep 5 22:50:20 2014 +0200
+
+	    Implement watchers for regular files as well.
+        </comment>
+    </note>
+    <note priority="medium" time="1477612891" done="1477612914">
+        Create a Doozer file reader
+
+	There should be a way to simply read a Doozer file using an io.Reader
+	interface.
+        <comment>
+            commit 109eb47e86978d857f413f56053b17398cf58038
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Thu Sep 4 02:24:19 2014 +0200
+
+	    Add a simple implementation of a Doozer file reader.
+        </comment>
+    </note>
+    <note priority="medium" time="1477613210" done="1477613253">
+        Create a Doozer file watcher implementation
+
+	There should be a way to watch Doozer files for changes via URLs,
+	without knowing implementation details.
+        <comment>
+            commit 28ddbd8d064635277e08032b56d0136df9f917fe
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Thu Sep 4 23:53:03 2014 +0200
+
+	    Create a registry for file watchers.
+
+	    Add a Doozer implementation to it.
+        </comment>
+    </note>
+    <note priority="veryhigh" time="1477612703" done="1477613863">
+        Add a common reader API
+
+	There should be a way to specify that you just want to read from a
+	given URL, without knowledge of what type of backend tat URL is
+	connected to.
+        <comment>
+            commit ef372399f1ea65708b1f3989ba7a7de6dc42737d
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Mon Sep 8 00:43:59 2014 +0200
+
+	    Add a new registry for file systems and add the regular file
+	    implementation as one.
+        </comment>
+    </note>
+    <note priority="veryhigh" time="1477612763">
+        Remove Doozer file reader
+
+	Doozer is deprecated.
+    </note>
+    <note priority="medium" time="1477612869">
+        Add etcd reader/watcher support
+    </note>
+    <note priority="low" time="1477612549">
+        Add unit tests
+
+	As a respectable project we should have unit tests, I just can't
+	currently think of a way to implement them.
+    </note>
+</todo>

@@ -43,6 +43,7 @@ import (
 	"github.com/caoimhechaos/go-file"
 	fsetcd "github.com/caoimhechaos/go-file/etcd"
 	_ "github.com/caoimhechaos/go-file/file"
+	"github.com/caoimhechaos/go-file/rados"
 	etcd "github.com/coreos/etcd/clientv3"
 )
 
@@ -69,6 +70,8 @@ func main() {
 	var etcdConfig etcd.Config
 	var etcdClient *etcd.Client
 
+	var radosConfigPath string
+
 	var args []string
 	var cmd string
 	var u *url.URL
@@ -84,6 +87,8 @@ func main() {
 		"User name to use for authenticating to etcd")
 	flag.StringVar(&etcdPass, "etcd-pass", "",
 		"Password to use for authenticating to etcd")
+	flag.StringVar(&radosConfigPath, "rados-config", "",
+		"Path of a Rados configuration to read")
 	flag.Parse()
 
 	etcdServers = strings.Split(etcdServerList, ",")
@@ -115,6 +120,14 @@ func main() {
 
 	if etcdClient != nil {
 		fsetcd.RegisterEtcdClient(etcdClient)
+	}
+
+	if len(radosConfigPath) > 0 {
+		err = rados.RegisterRadosConfig(radosConfigPath)
+		if err != nil {
+			fmt.Println("error reading RADOS configuration ", radosConfigPath, ": ",
+				err)
+		}
 	}
 
 	args = flag.Args()

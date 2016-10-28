@@ -38,9 +38,12 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/caoimhechaos/go-file"
+	fsetcd "github.com/caoimhechaos/go-file/etcd"
 	_ "github.com/caoimhechaos/go-file/file"
+	etcd "github.com/coreos/etcd/clientv3"
 )
 
 func echoFileOnChange(path string, rc io.ReadCloser) {
@@ -57,12 +60,62 @@ func echoErrors(errchan chan error) {
 }
 
 func main() {
+	var etcdServers []string
+	var etcdServerList string
+	var etcdUrl string
+	var etcdConfigPath string
+	var etcdUser, etcdPass string
+
+	var etcdConfig etcd.Config
+	var etcdClient *etcd.Client
+
 	var args []string
 	var cmd string
 	var u *url.URL
 	var err error
 
+	flag.StringVar(&etcdServerList, "etcd-servers", "",
+		"Comma separated list of etcd servers")
+	flag.StringVar(&etcdUrl, "etcd-url", "",
+		"URL of the etcd service")
+	flag.StringVar(&etcdConfigPath, "etcd-config", "",
+		"Path to the etcd configuration file")
+	flag.StringVar(&etcdUser, "etcd-user", "",
+		"User name to use for authenticating to etcd")
+	flag.StringVar(&etcdPass, "etcd-pass", "",
+		"Password to use for authenticating to etcd")
 	flag.Parse()
+
+	etcdServers = strings.Split(etcdServerList, ",")
+
+	if len(etcdServers) > 0 {
+		etcdConfig.Endpoints = etcdServers
+		etcdConfig.Username = etcdUser
+		etcdConfig.Password = etcdPass
+
+		etcdClient, err = etcd.New(etcdConfig)
+		if err != nil {
+			fmt.Println("error connecting to etcd at ", etcdServerList, ": ", err)
+			os.Exit(1)
+		}
+	} else if len(etcdConfigPath) > 0 {
+		etcdClient, err = etcd.NewFromConfigFile(etcdConfigPath)
+		if err != nil {
+			fmt.Println("error connecting to etcd configured from ", etcdConfigPath,
+				": ", err)
+			os.Exit(1)
+		}
+	} else if len(etcdUrl) > 0 {
+		etcdClient, err = etcd.NewFromURL(etcdUrl)
+		if err != nil {
+			fmt.Println("error connecting to etcd at ", etcdUrl, ": ", err)
+			os.Exit(1)
+		}
+	}
+
+	if etcdClient != nil {
+		fsetcd.RegisterEtcdClient(etcdClient)
+	}
 
 	args = flag.Args()
 	if len(args) == 0 {

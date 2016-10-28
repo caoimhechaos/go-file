@@ -36,8 +36,8 @@ import (
 	"net/url"
 	"os"
 
-	"code.google.com/p/go.exp/fsnotify"
 	"github.com/caoimhechaos/go-file"
+	"gopkg.in/fsnotify.v1"
 )
 
 // Object for generating watchers for individual files.
@@ -96,7 +96,7 @@ func NewFileWatcher(path string, cb func(string, io.ReadCloser)) (
 		return nil, err
 	}
 
-	err = watcher.Watch(path)
+	err = watcher.Add(path)
 	if err != nil {
 		return nil, err
 	}
@@ -176,11 +176,11 @@ func NewFileWatcher(path string, cb func(string, io.ReadCloser)) (
 // to the relevant callback.
 func (f *FileWatcher) watchForChanges() {
 	for !f.shutdown {
-		var event *fsnotify.FileEvent
+		var event fsnotify.Event
 
-		event = <-f.watcher.Event
+		event = <-f.watcher.Events
 
-		if event.IsModify() {
+		if event.Op&(fsnotify.Write|fsnotify.Remove|fsnotify.Rename) != 0 {
 			var fn *os.File
 			var err error
 
@@ -188,7 +188,7 @@ func (f *FileWatcher) watchForChanges() {
 			if err == nil {
 				go f.cb(event.Name, fn)
 			} else {
-				f.watcher.Error <- err
+				f.watcher.Errors <- err
 			}
 		}
 	}
@@ -199,7 +199,7 @@ func (f *FileWatcher) Shutdown() error {
 	var err error
 
 	f.shutdown = true
-	err = f.watcher.RemoveWatch(f.path)
+	err = f.watcher.Remove(f.path)
 	if err != nil {
 		return err
 	}
@@ -210,5 +210,5 @@ func (f *FileWatcher) Shutdown() error {
 // Retrieve the error channel associated with the watcher.
 // It will stream a list of all errors created while watching.
 func (f *FileWatcher) ErrChan() chan error {
-	return f.watcher.Error
+	return f.watcher.Errors
 }

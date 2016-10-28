@@ -13,6 +13,36 @@
 	    implementation as one.
         </comment>
     </note>
+    <note priority="veryhigh" time="1477612703" done="1477613863">
+        Add a common reader API
+
+	There should be a way to specify that you just want to read from a
+	given URL, without knowledge of what type of backend tat URL is
+	connected to.
+        <comment>
+            commit ef372399f1ea65708b1f3989ba7a7de6dc42737d
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Mon Sep 8 00:43:59 2014 +0200
+
+	    Add a new registry for file systems and add the regular file
+	    implementation as one.
+        </comment>
+    </note>
+    <note priority="veryhigh" time="1477612763" done="1477624476">
+        Remove Doozer file reader
+
+	Doozer is deprecated.
+        <comment>
+            commit 97706ab539b3b0c0692cf53d9d2e6834508a0adc
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Fri Oct 28 02:45:54 2016 +0200
+
+	    Remove Doozer support.
+
+	    Doozer is deprecated; the code doesn't even build anymore so it is time
+	    to let it go.
+        </comment>
+    </note>
     <note priority="veryhigh" time="1477613074" done="1477613088">
         Create a registry for watching files
 
@@ -68,28 +98,19 @@
 	    Add a Doozer implementation to it.
         </comment>
     </note>
-    <note priority="veryhigh" time="1477612703" done="1477613863">
-        Add a common reader API
-
-	There should be a way to specify that you just want to read from a
-	given URL, without knowledge of what type of backend tat URL is
-	connected to.
-        <comment>
-            commit ef372399f1ea65708b1f3989ba7a7de6dc42737d
-	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
-	    Date:   Mon Sep 8 00:43:59 2014 +0200
-
-	    Add a new registry for file systems and add the regular file
-	    implementation as one.
-        </comment>
-    </note>
-    <note priority="veryhigh" time="1477612763">
-        Remove Doozer file reader
-
-	Doozer is deprecated.
-    </note>
-    <note priority="medium" time="1477612869">
+    <note priority="medium" time="1477612869" done="1477624549">
         Add etcd reader/watcher support
+        <comment>
+            commit e92c3982aff5f01698c1a1fa91d008c0286f6f7b
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Fri Oct 28 05:12:20 2016 +0200
+
+	    Add support for treating etcd as a file system.
+
+	    Also add etcd support to fscli. The whole implementation follows
+	    the "write on close" scheme since etcd updates are supposed to be
+	    atomic.
+        </comment>
     </note>
     <note priority="low" time="1477612549">
         Add unit tests

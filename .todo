@@ -3,7 +3,7 @@
     <note priority="veryhigh" time="1477612654" done="1477613465">
         Add a common writer API
         <comment>
-	    There should be a common API to point to a file URL and write it.
+            There should be a common API to point to a file URL and write it.
 
             commit ef372399f1ea65708b1f3989ba7a7de6dc42737d
 	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
@@ -16,7 +16,7 @@
     <note priority="veryhigh" time="1477612703" done="1477613863">
         Add a common reader API
         <comment>
-	    There should be a way to specify that you just want to read from a
+            There should be a way to specify that you just want to read from a
 	    given URL, without knowledge of what type of backend tat URL is
 	    connected to.
 
@@ -31,7 +31,7 @@
     <note priority="veryhigh" time="1477612763" done="1477624476">
         Remove Doozer file reader
         <comment>
-	    Doozer is deprecated.
+            Doozer is deprecated.
 
             commit 97706ab539b3b0c0692cf53d9d2e6834508a0adc
 	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
@@ -45,9 +45,8 @@
     </note>
     <note priority="veryhigh" time="1477613074" done="1477613088">
         Create a registry for watching files
-
         <comment>
-	    There should be a way to watch files without knowing what kind of
+            There should be a way to watch files without knowing what kind of
 	    backend they're connected to.
 
             commit 28ddbd8d064635277e08032b56d0136df9f917fe
@@ -62,7 +61,7 @@
     <note priority="high" time="1477613364" done="1477613376">
         Implement a plain file watcher
         <comment>
-	    Implement an object for watching plain files for changes.
+            Implement an object for watching plain files for changes.
 
             commit 7e22e23085e4e2ba6a37b21395ce06978a5cdfb6
 	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
@@ -88,7 +87,7 @@
     <note priority="medium" time="1477612891" done="1477612914">
         Create a Doozer file reader
         <comment>
-	    There should be a way to simply read a Doozer file using an
+            There should be a way to simply read a Doozer file using an
 	    io.Reader interface.
 
             commit 109eb47e86978d857f413f56053b17398cf58038
@@ -101,7 +100,7 @@
     <note priority="medium" time="1477613210" done="1477613253">
         Create a Doozer file watcher implementation
         <comment>
-	    There should be a way to watch Doozer files for changes via URLs,
+            There should be a way to watch Doozer files for changes via URLs,
 	    without knowing implementation details.
 
             commit 28ddbd8d064635277e08032b56d0136df9f917fe
@@ -113,20 +112,29 @@
 	    Add a Doozer implementation to it.
         </comment>
     </note>
-    <note priority="medium" time="1477624698">
+    <note priority="medium" time="1477624698" done="1477689608">
         Add support for rados blocks as a file system.
-	<comment>
-	    rados is a commonly used block store which mostly supports
+        <comment>
+            rados is a commonly used block store which mostly supports
 	    appending to files, so it should be relatively simple to add
 	    rudimentary file system support for it (with most functions just
 	    returning errors).
-	</comment>
+
+	    commit f4ff4b451ac1aa331df5f927339f5131f89eee09
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Fri Oct 28 23:17:43 2016 +0200
+
+	    Add support for reading and writing Rados files using the file API.
+
+	    There is no watcher or list support so this is really rudimentary,
+	    but it should probably work.
+        </comment>
     </note>
     <note priority="low" time="1477612549">
         Add unit tests
-	<comment>
-	     As a respectable project we should have unit tests, I just can't
+        <comment>
+            As a respectable project we should have unit tests, I just can't
 	     currently think of a way to implement them.
-	</comment>
+        </comment>
     </note>
 </todo>

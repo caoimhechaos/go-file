@@ -40,9 +40,7 @@ import (
 	"os"
 
 	"github.com/caoimhechaos/go-file"
-	fdz "github.com/caoimhechaos/go-file/doozer"
 	_ "github.com/caoimhechaos/go-file/file"
-	"github.com/ha/doozer"
 )
 
 func echoFileOnChange(path string, rc io.ReadCloser) {
@@ -59,35 +57,17 @@ func echoErrors(errchan chan error) {
 }
 
 func main() {
-	var doozer_uri, doozer_buri string
 	var args []string
 	var cmd string
 	var u *url.URL
 	var err error
 
-	flag.StringVar(&doozer_uri, "doozer-uri", os.Getenv("DOOZER_URI"),
-		"Doozer URI to connect to for Doozer operations")
-	flag.StringVar(&doozer_buri, "doozer-boot-uri",
-		os.Getenv("DOOZER_BOOT_URI"),
-		"Doozer boot URI for finding the Doozer servers in --doozer-uri")
 	flag.Parse()
 
 	args = flag.Args()
 	if len(args) == 0 {
 		fmt.Println("Command required")
 		os.Exit(1)
-	}
-
-	if len(doozer_uri) > 0 {
-		var conn *doozer.Conn
-		conn, err = doozer.DialUri(doozer_uri, doozer_buri)
-		if err != nil {
-			fmt.Printf("Error connecting to %s via doozer: %s\n",
-				doozer_uri, err.Error())
-			os.Exit(1)
-		}
-
-		fdz.RegisterFileType(conn)
 	}
 
 	cmd = args[0]

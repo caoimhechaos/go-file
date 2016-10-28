@@ -70,6 +70,20 @@
 	    Implement watchers for regular files as well.
         </comment>
     </note>
+    <note priority="medium" time="1477612869" done="1477624549">
+        Add etcd reader/watcher support
+        <comment>
+            commit e92c3982aff5f01698c1a1fa91d008c0286f6f7b
+	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
+	    Date:   Fri Oct 28 05:12:20 2016 +0200
+
+	    Add support for treating etcd as a file system.
+
+	    Also add etcd support to fscli. The whole implementation follows
+	    the "write on close" scheme since etcd updates are supposed to be
+	    atomic.
+        </comment>
+    </note>
     <note priority="medium" time="1477612891" done="1477612914">
         Create a Doozer file reader
 
@@ -98,19 +112,14 @@
 	    Add a Doozer implementation to it.
         </comment>
     </note>
-    <note priority="medium" time="1477612869" done="1477624549">
-        Add etcd reader/watcher support
-        <comment>
-            commit e92c3982aff5f01698c1a1fa91d008c0286f6f7b
-	    Author: Caoimhe Chaos &lt;caoimhechaos@protonmail.com&gt;
-	    Date:   Fri Oct 28 05:12:20 2016 +0200
-
-	    Add support for treating etcd as a file system.
-
-	    Also add etcd support to fscli. The whole implementation follows
-	    the "write on close" scheme since etcd updates are supposed to be
-	    atomic.
-        </comment>
+    <note priority="medium" time="1477624698">
+        Add support for rados blocks as a file system.
+	<comment>
+		rados is a commonly used block store which mostly supports
+		appending to files, so it should be relatively simple to add
+		rudimentary file system support for it (with most functions
+		just returning errors).
+	</comment>
     </note>
     <note priority="low" time="1477612549">
         Add unit tests

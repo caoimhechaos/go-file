@@ -48,6 +48,7 @@ type FileSystem interface {
 	OpenForWrite(*url.URL) (io.WriteCloser, error)
 	List(*url.URL) ([]string, error)
 	Watch(*url.URL, func(string, io.ReadCloser)) (Watcher, error)
+	Remove(*url.URL) error
 }
 
 // List of URL schema handlers known.
@@ -124,4 +125,19 @@ func OpenForWrite(u *url.URL) (io.WriteCloser, error) {
 	}
 
 	return nil, FS_OperationNotImplementedError
+}
+
+// Remove the referenced object from the file system. This would cause
+// the file to be deleted from the underlying file system, or whatever
+// operation is equivalent to that.
+func Remove(u *url.URL) error {
+	var fs FileSystem
+	var ok bool
+
+	fs, ok = fileSystemHandlers[u.Scheme]
+	if ok {
+		return fs.Remove(u)
+	}
+
+	return FS_OperationNotImplementedError
 }

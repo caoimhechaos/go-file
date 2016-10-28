@@ -101,3 +101,12 @@ func (e *etcdFileSystem) Watch(u *url.URL,
 	cb func(string, io.ReadCloser)) (file.Watcher, error) {
 	return NewEtcdWatcher(e.etcdClient, u.Path, cb)
 }
+
+// Remove deletes the specified object from the etcd tree.
+func (e *etcdFileSystem) Remove(u *url.URL) error {
+	var ctx context.Context = context.Background()
+	var err error
+
+	_, err = e.etcdClient.Delete(ctx, u.Path)
+	return err
+}

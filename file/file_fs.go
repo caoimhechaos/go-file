@@ -79,3 +79,8 @@ func (f *FileFileSystemIntegration) Watch(
 	file.Watcher, error) {
 	return NewFileWatcher(fileid.Path, cb)
 }
+
+// Remove the specified file from the file system.
+func (f *FileFileSystemIntegration) Remove(u *url.URL) error {
+	return os.Remove(u.Path)
+}

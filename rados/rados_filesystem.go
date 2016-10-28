@@ -159,3 +159,17 @@ func (*radosFileSystem) Watch(*url.URL, func(string, io.ReadCloser)) (
 	file.Watcher, error) {
 	return nil, file.FS_OperationNotImplementedError
 }
+
+// Remove the file from Rados. This will remove the named object from all
+// ceph object storage replicas.
+func (r *radosFileSystem) Remove(u *url.URL) error {
+	var ctx *rados.Context
+	var err error
+
+	ctx, err = getContext(r.rfs, u.Host)
+	if err != nil {
+		return err
+	}
+
+	return ctx.Remove(u.Path)
+}

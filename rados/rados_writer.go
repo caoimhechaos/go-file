@@ -32,6 +32,7 @@
 package rados
 
 import (
+	"github.com/caoimhechaos/go-file"
 	"github.com/mrkvm/rados.go"
 )
 
@@ -39,6 +40,7 @@ import (
 // data to the wrapped Rados object, and closing won't do anything.
 type RadosWriteCloser struct {
 	obj *rados.Object
+	pos int64
 }
 
 // NewRadosWriteCloser creates a new RadosWriteCloser for the given Rados object
@@ -46,6 +48,7 @@ type RadosWriteCloser struct {
 func NewRadosWriteCloser(obj *rados.Object) *RadosWriteCloser {
 	return &RadosWriteCloser{
 		obj: obj,
+		pos: obj.Size(),
 	}
 }
 
@@ -56,7 +59,18 @@ func (w *RadosWriteCloser) Write(p []byte) (n int, err error) {
 		return
 	}
 	n = len(p)
+	w.pos += int64(n)
 	return
+}
+
+// Seek on appending writers only supports determining the current position,
+// anything else will yield an error.
+func (w *RadosWriteCloser) Seek(offset int64, whence int) (int64, error) {
+	if offset == 0 && whence == 0 {
+		return w.pos, nil
+	}
+
+	return -1, file.FS_OperationNotImplementedError
 }
 
 // Close does absolutely nothing because why would it?

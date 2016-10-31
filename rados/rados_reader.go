@@ -32,6 +32,8 @@
 package rados
 
 import (
+	"os"
+
 	"github.com/mrkvm/rados.go"
 )
 
@@ -59,6 +61,30 @@ func (r *RadosReadCloser) Read(p []byte) (n int, err error) {
 		r.pos += int64(n)
 	}
 	return
+}
+
+// Seek changes the current position in the file as specified in the parameters.
+// See the io.Seeker interface.
+func (r *RadosReadCloser) Seek(offset int64, whence int) (int64, error) {
+	var newpos int64
+
+	if whence == 0 {
+		// Seeking relative to the beginning of the file.
+		newpos = offset
+	} else if whence == 1 {
+		// Seeking relative to the current offset.
+		newpos = r.pos + offset
+	} else if whence == 2 {
+		// Seeking relative to the end of the file.
+		newpos = r.obj.Size() + offset
+	}
+
+	if newpos < 0 || newpos > r.obj.Size() {
+		return -1, os.ErrInvalid
+	}
+
+	r.pos = newpos
+	return newpos, nil
 }
 
 // Close doesn't do a lot since Rados doesn't have that notion.

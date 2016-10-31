@@ -46,6 +46,7 @@ var FS_OperationNotImplementedError error = errors.New("Operation not implemente
 type FileSystem interface {
 	Open(*url.URL) (io.ReadCloser, error)
 	OpenForWrite(*url.URL) (io.WriteCloser, error)
+	OpenForAppend(*url.URL) (io.WriteCloser, error)
 	List(*url.URL) ([]string, error)
 	Watch(*url.URL, func(string, io.ReadCloser)) (Watcher, error)
 	Remove(*url.URL) error
@@ -122,6 +123,22 @@ func OpenForWrite(u *url.URL) (io.WriteCloser, error) {
 	fs, ok = fileSystemHandlers[u.Scheme]
 	if ok {
 		return fs.OpenForWrite(u)
+	}
+
+	return nil, FS_OperationNotImplementedError
+}
+
+// Return a writer for appending data to the file given as "u". Any
+// writer should guarantee that all data has been written by the time
+// Close() returns without an error. No other guarantees have to be
+// given.
+func OpenForAppend(u *url.URL) (io.WriteCloser, error) {
+	var fs FileSystem
+	var ok bool
+
+	fs, ok = fileSystemHandlers[u.Scheme]
+	if ok {
+		return fs.OpenForAppend(u)
 	}
 
 	return nil, FS_OperationNotImplementedError

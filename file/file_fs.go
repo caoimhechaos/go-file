@@ -59,6 +59,12 @@ func (f *FileFileSystemIntegration) OpenForWrite(u *url.URL) (
 	return os.OpenFile(u.Path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 }
 
+// Open the file pointed to by "u" for appending.
+func (f *FileFileSystemIntegration) OpenForAppend(u *url.URL) (
+	io.WriteCloser, error) {
+	return os.OpenFile(u.Path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+}
+
 // Return a list of all files in the directory given in "u".
 func (f *FileFileSystemIntegration) List(u *url.URL) ([]string, error) {
 	var dir *os.File

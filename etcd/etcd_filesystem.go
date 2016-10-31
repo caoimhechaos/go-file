@@ -70,6 +70,12 @@ func (e *etcdFileSystem) OpenForWrite(u *url.URL) (io.WriteCloser, error) {
 	return NewEtcdWriter(e.etcdClient, u.Path), nil
 }
 
+// Open the file given as "u" for appending. This may be implemented
+// one day if it's determined that this makes sense.
+func (e *etcdFileSystem) OpenForAppend(u *url.URL) (io.WriteCloser, error) {
+	return nil, file.FS_OperationNotImplementedError
+}
+
 // Get a list of all names under "u", which is supposed to be a directory.
 func (e *etcdFileSystem) List(u *url.URL) (ret []string, err error) {
 	var resp *etcd.GetResponse

@@ -148,6 +148,26 @@ func (r *radosFileSystem) OpenForWrite(u *url.URL) (io.WriteCloser, error) {
 	return NewRadosWriteCloser(obj), nil
 }
 
+// OpenForAppend creates a new WriteCloser for the given Rados object. Any
+// data written to this will be appended to the given Rados object.
+func (r *radosFileSystem) OpenForAppend(u *url.URL) (io.WriteCloser, error) {
+	var ctx *rados.Context
+	var obj *rados.Object
+	var err error
+
+	ctx, err = getContext(r.rfs, u.Host)
+	if err != nil {
+		return nil, err
+	}
+
+	obj, err = ctx.Open(u.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewRadosWriteCloser(obj), nil
+}
+
 // There is no List function for Rados.
 func (*radosFileSystem) List(*url.URL) (r []string, err error) {
 	err = file.FS_OperationNotImplementedError

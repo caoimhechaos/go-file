@@ -35,6 +35,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"path"
 
 	"github.com/caoimhechaos/go-file"
 )
@@ -56,12 +57,22 @@ func (f *FileFileSystemIntegration) Open(u *url.URL) (io.ReadCloser, error) {
 // Open the file pointed to by "u" for writing.
 func (f *FileFileSystemIntegration) OpenForWrite(u *url.URL) (
 	io.WriteCloser, error) {
+	var err error
+	err = os.MkdirAll(path.Dir(u.Path), 0755)
+	if err != nil {
+		return nil, err
+	}
 	return os.OpenFile(u.Path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 }
 
 // Open the file pointed to by "u" for appending.
 func (f *FileFileSystemIntegration) OpenForAppend(u *url.URL) (
 	io.WriteCloser, error) {
+	var err error
+	err = os.MkdirAll(path.Dir(u.Path), 0755)
+	if err != nil {
+		return nil, err
+	}
 	return os.OpenFile(u.Path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 }
 
